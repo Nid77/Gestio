@@ -1,0 +1,26 @@
+# Fichiers binaires exécutables
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Répertoires de build
+/build/
+bin/
+
+# Répertoire de cache des modules Go (créé par `go mod download`)
+/pkg/mod/
+
+# Cache et fichiers temporaires
+/tmp/
+*.log
+*.out
+
+# Dépendances spécifiques à l'utilisateur (modules Go)
+go.sum
+
+# Fichiers de test coverage
+*.test
+*.cover
+
+Update folder organization

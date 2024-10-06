@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Création d'une application de gestion des tâches",
+        "shortdescription": "Application web pour gérer les tâches quotidiennes",
+        "description": "Cette application permettra aux utilisateurs de créer, modifier et supprimer des tâches, ainsi que de définir des priorités et des dates d'échéance.",
+        "status": "En cours de développement",
+        "priority": "Moyenne",
+        "duedate": "2023-09-15",
+        "tags": "Web, Gestion de tâches, Développement",
+        "creation_date": "2023-08-23"
+    },
+    {
+        "name": "Refonte de l'interface utilisateur",
+        "shortdescription": "Amélioration de l'expérience utilisateur",
+        "description": "Refonte complète de l'interface utilisateur pour une expérience plus conviviale et intuitive.",
+        "status": "En attente",
+        "priority": "Haute",
+        "duedate": "",
+        "tags": "UI/UX, Design, Amélioration",
+        "creation_date": "2023-08-23"
+    },
+    {
+        "name": "Correction des bugs de la version 2.1",
+        "shortdescription": "Correction des problèmes signalés par les utilisateurs",
+        "description": "Correction des bugs et des erreurs signalés par les utilisateurs dans la version actuelle de l'application.",
+        "status": "En cours",
+        "priority": "Urgent",
+        "duedate": "2023-09-30",
+        "tags": "Maintenance, Correction de bugs",
+        "creation_date": "2023-08-23"
+    },
+    {
+        "name": "Mise à jour de la documentation",
+        "shortdescription": "Actualisation de la documentation utilisateur",
+        "description": "Révision et mise à jour de la documentation utilisateur pour inclure les dernières fonctionnalités et modifications.",
+        "status": "En attente",
+        "priority": "Basse",
+        "duedate": "",
+        "tags": "Documentation, Utilisateur",
+        "creation_date": "2023-08-23"
+    },
+    {
+        "name": "Test de régression",
+        "shortdescription": "Validation des fonctionnalités existantes",
+        "description": "Test de régression pour s'assurer que les nouvelles fonctionnalités n'ont pas introduit de nouveaux problèmes dans les fonctionnalités existantes.",
+        "status": "En cours",
+        "priority": "Moyenne",
+        "duedate": "2023-09-10",
+        "tags": "Tests, Validation, Fonctionnalités",
+        "creation_date": "2023-08-23"
+    }
+]
