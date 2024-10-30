@@ -28,6 +28,7 @@ var rootCmd = &cobra.Command{
 }
 
 var name string
+var filepath string = "data/data.json"
 
 func init() {
 	rootCmd.AddCommand(addTask)
@@ -71,13 +72,13 @@ var addTask = &cobra.Command{
 		}
 
 		var tasks []Data.Task
-		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+		if err := Data.GetJsonData(filepath, &tasks); err != nil {
 			return
 		}
 
 		tasks = append(tasks, task)
 
-		if err := Data.SaveJsonData("data.json", &tasks); err != nil {
+		if err := Data.SaveJsonData(filepath, &tasks); err != nil {
 			return
 		}
 
@@ -100,7 +101,7 @@ var removeTask = &cobra.Command{
 
 		var tasks []Data.Task
 
-		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+		if err := Data.GetJsonData(filepath, &tasks); err != nil {
 			return
 		}
 
@@ -135,7 +136,7 @@ var showTask = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tasks []Data.Task
 
-		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+		if err := Data.GetJsonData(filepath, &tasks); err != nil {
 			return
 		}
 
@@ -156,7 +157,7 @@ var listTask = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tasks []Data.Task
 
-		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+		if err := Data.GetJsonData(filepath, &tasks); err != nil {
 			return
 		}
 
