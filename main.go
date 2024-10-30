@@ -164,17 +164,17 @@ var listTask = &cobra.Command{
 		maxStatusWidth := maxLength(tasks, func(t Data.Task) string { return t.Status })
 		maxPriorityWidth := maxLength(tasks, func(t Data.Task) string { return t.Priority })
 
-		// En-tête du tableau
+		// Header
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
 		fmt.Printf("| %s | %s | %s|\n", pad("Nom de la tâche", maxNameWidth), pad("Statut", maxStatusWidth), pad("Priorité", maxPriorityWidth))
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
 
-		// Affichage des tâches dans un tableau
+		// Tasks
 		for _, task := range tasks {
 			fmt.Printf("| %s | %s | %s |\n", pad(task.Name, maxNameWidth), pad(task.Status, maxStatusWidth), pad(task.Priority, maxPriorityWidth))
 		}
 
-		// Ligne inférieure du tableau
+		// Footer
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
 	},
 }
