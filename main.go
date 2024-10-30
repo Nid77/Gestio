@@ -3,12 +3,21 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
+
+	Data "gestio/data"
+	//Cli "gestio/cli"
 )
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "gestio",
@@ -17,6 +26,7 @@ var rootCmd = &cobra.Command{
 		fmt.Println("Welcome !")
 	},
 }
+
 var name string
 
 func init() {
@@ -49,9 +59,7 @@ var addTask = &cobra.Command{
 			name = args[0]
 		}
 
-		var tasks []Task
-		Open("data.json", &tasks)
-		task := Task{
+		task := Data.Task{
 			Name:             name,
 			ShortDescription: cmd.Flags().Lookup("shortdescription").Value.String(),
 			Description:      cmd.Flags().Lookup("description").Value.String(),
@@ -62,9 +70,16 @@ var addTask = &cobra.Command{
 			Tags:             cmd.Flags().Lookup("tags").Value.String(),
 		}
 
+		var tasks []Data.Task
+		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+			return
+		}
+
 		tasks = append(tasks, task)
 
-		Write("data.json", &tasks)
+		if err := Data.SaveJsonData("data.json", &tasks); err != nil {
+			return
+		}
 
 		fmt.Println("Added task:", task.Name)
 	},
@@ -83,8 +98,12 @@ var removeTask = &cobra.Command{
 			name = args[0]
 		}
 
-		var tasks []Task
-		Open("data.json", &tasks)
+		var tasks []Data.Task
+
+		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+			return
+		}
+
 		for _, task := range tasks {
 			if task.Name == name {
 				fmt.Print(task)
@@ -105,9 +124,8 @@ var editTask = &cobra.Command{
 			fmt.Print("You must at least name the task to edit")
 			return
 		}
-		var tasks []Task
-		Open("data.json", &tasks)
 
+		fmt.Print("Not implemented yet")
 	},
 }
 
@@ -115,8 +133,12 @@ var showTask = &cobra.Command{
 	Use:   "show",
 	Short: "show a specefic detail of a task",
 	Run: func(cmd *cobra.Command, args []string) {
-		var tasks []Task
-		Open("data.json", &tasks)
+		var tasks []Data.Task
+
+		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+			return
+		}
+
 		for _, task := range tasks {
 			if task.Name == args[0] {
 				fmt.Print(task)
@@ -132,23 +154,15 @@ var listTask = &cobra.Command{
 	Use:   "list",
 	Short: "List all tasks",
 	Run: func(cmd *cobra.Command, args []string) {
-		var tasks []Task
-		//var str [8][]string
+		var tasks []Data.Task
 
-		//fieldName := []string{"Name", "Status", "Priority"} //getFieldNames(Task{})
-		//max := make([]int, len(fieldName))
-		//o := 0
-		Open("data.json", &tasks)
-		/*
-			for _, name := range fieldName {
-				fmt.Print(name + " : ")
-				fmt.Print(convertToStringSlice(extractField(tasks, name)))
-				fmt.Print("\n")
-			}
-		*/
-		maxNameWidth := maxLength(tasks, func(t Task) string { return t.Name })
-		maxStatusWidth := maxLength(tasks, func(t Task) string { return t.Status })
-		maxPriorityWidth := maxLength(tasks, func(t Task) string { return t.Priority })
+		if err := Data.GetJsonData("data.json", &tasks); err != nil {
+			return
+		}
+
+		maxNameWidth := maxLength(tasks, func(t Data.Task) string { return t.Name })
+		maxStatusWidth := maxLength(tasks, func(t Data.Task) string { return t.Status })
+		maxPriorityWidth := maxLength(tasks, func(t Data.Task) string { return t.Priority })
 
 		// En-tête du tableau
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
@@ -169,7 +183,7 @@ func pad(str string, length int) string {
 	return fmt.Sprintf("%-*s", length, str)
 }
 
-func maxLength(tasks []Task, selector func(Task) string) int {
+func maxLength(tasks []Data.Task, selector func(Data.Task) string) int {
 	max := 0
 	for _, task := range tasks {
 		length := len(selector(task))
@@ -188,45 +202,4 @@ func MaxString(str []string) int {
 		}
 	}
 	return len(new)
-}
-
-func extractField(data []Task, fieldName string) []interface{} {
-	var fieldValues []interface{}
-
-	for _, task := range data {
-		taskValue := reflect.ValueOf(task)
-		fieldValue := taskValue.FieldByName(fieldName).Interface()
-		fieldValues = append(fieldValues, fieldValue)
-	}
-
-	return fieldValues
-}
-
-func convertToStringSlice(values []interface{}) []string {
-	var stringSlice []string
-	for _, value := range values {
-		if strValue, ok := value.(string); ok {
-			stringSlice = append(stringSlice, strValue)
-		}
-	}
-	return stringSlice
-}
-
-func getFieldNames(data interface{}) []string {
-	var fieldNames []string
-	dataType := reflect.TypeOf(data)
-
-	for i := 0; i < dataType.NumField(); i++ {
-		field := dataType.Field(i)
-		fieldNames = append(fieldNames, field.Name)
-	}
-
-	return fieldNames
-}
-
-func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }

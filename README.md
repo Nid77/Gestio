@@ -3,5 +3,5 @@
 launch app
 
 ```
-go run gestio/gestio  
+go run gestio 
 ```
