@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -44,6 +45,7 @@ func init() {
 	rootCmd.AddCommand(editTask)
 	rootCmd.AddCommand(listTask)
 	rootCmd.AddCommand(showTask)
+	rootCmd.AddCommand(searchTask)
 }
 
 var addTask = &cobra.Command{
@@ -108,7 +110,6 @@ var removeTask = &cobra.Command{
 		for _, task := range tasks {
 			if task.Name == name {
 				fmt.Print(task)
-
 				return
 			}
 		}
@@ -203,4 +204,36 @@ func MaxString(str []string) int {
 		}
 	}
 	return len(new)
+}
+
+var searchTask = &cobra.Command{
+	Use:   "search",
+	Short: "search a task",
+	Run: func(cmd *cobra.Command, args []string) {
+		var tasks []Data.Task
+		if err := Data.GetJsonData(filepath, &tasks); err != nil {
+			return
+		}
+
+		if len(args) < 1 {
+			fmt.Print("You must at least name the task to search")
+			return
+		}
+
+		var foundTasks []Data.Task
+		regex := regexp.MustCompile(args[0])
+		for _, task := range tasks {
+			if regex.MatchString(task.Name) {
+				fmt.Print(task)
+				foundTasks = append(foundTasks, task)
+				return
+			}
+		}
+
+		if len(foundTasks) == 0 {
+			fmt.Print("No task found")
+		} else {
+			fmt.Print("Task found: ", foundTasks)
+		}
+	},
 }
