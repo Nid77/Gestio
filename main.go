@@ -30,6 +30,7 @@ var rootCmd = &cobra.Command{
 
 var name string
 var filepath string = "data/data.json"
+var repository Data.TaskRepository = &Data.JSONTaskRepository{FilePath: filepath}
 
 func init() {
 	rootCmd.AddCommand(addTask)
@@ -73,82 +74,11 @@ var addTask = &cobra.Command{
 			Tags:             cmd.Flags().Lookup("tags").Value.String(),
 		}
 
-		var tasks []Data.Task
-		if err := Data.GetJsonData(filepath, &tasks); err != nil {
+		err := repository.AddTask(task)
+		if(err != nil){
 			return
 		}
-
-		tasks = append(tasks, task)
-
-		if err := Data.SaveJsonData(filepath, &tasks); err != nil {
-			return
-		}
-
 		fmt.Println("Added task:", task.Name)
-	},
-}
-
-var removeTask = &cobra.Command{
-	Use:   "rm",
-	Short: "remove a new task",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 && name == "" {
-			fmt.Print("You must at least name the task to remove")
-			return
-		}
-
-		if name == "" && len(args) > 1 {
-			name = args[0]
-		}
-
-		var tasks []Data.Task
-
-		if err := Data.GetJsonData(filepath, &tasks); err != nil {
-			return
-		}
-
-		for _, task := range tasks {
-			if task.Name == name {
-				fmt.Print(task)
-				return
-			}
-		}
-		fmt.Print("this task don't exist")
-
-	},
-}
-
-var editTask = &cobra.Command{
-	Use:   "edit",
-	Short: "modify a task",
-	Run: func(cmd *cobra.Command, args []string) {
-		if args[0] == "" {
-			fmt.Print("You must at least name the task to edit")
-			return
-		}
-
-		fmt.Print("Not implemented yet")
-	},
-}
-
-var showTask = &cobra.Command{
-	Use:   "show",
-	Short: "show a specefic detail of a task",
-	Run: func(cmd *cobra.Command, args []string) {
-		var tasks []Data.Task
-
-		if err := Data.GetJsonData(filepath, &tasks); err != nil {
-			return
-		}
-
-		for _, task := range tasks {
-			if task.Name == args[0] {
-				fmt.Print(task)
-				return
-			}
-		}
-		fmt.Print("this task don't exist")
-
 	},
 }
 
@@ -158,7 +88,8 @@ var listTask = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tasks []Data.Task
 
-		if err := Data.GetJsonData(filepath, &tasks); err != nil {
+		tasks,err := repository.GetAllTasks()
+		if(err != nil){
 			return
 		}
 
@@ -206,12 +137,32 @@ func MaxString(str []string) int {
 	return len(new)
 }
 
+var removeTask = &cobra.Command{
+	Use:   "rm",
+	Short: "remove a new task",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 && name == "" {
+			fmt.Print("You must at least name the task to remove")
+			return
+		}
+
+		if name == "" && len(args) > 1 {
+			name = args[0]
+		}
+
+		fmt.Print("Not implemented yet")
+	},
+}
+
+
+
 var searchTask = &cobra.Command{
 	Use:   "search",
 	Short: "search a task",
 	Run: func(cmd *cobra.Command, args []string) {
 		var tasks []Data.Task
-		if err := Data.GetJsonData(filepath, &tasks); err != nil {
+		tasks,err := repository.GetAllTasks()
+		if err != nil {
 			return
 		}
 
@@ -235,5 +186,29 @@ var searchTask = &cobra.Command{
 		} else {
 			fmt.Print("Task found: ", foundTasks)
 		}
+	},
+}
+
+
+var editTask = &cobra.Command{
+	Use:   "edit",
+	Short: "modify a task",
+	Run: func(cmd *cobra.Command, args []string) {
+		if args[0] == "" {
+			fmt.Print("You must at least name the task to edit")
+			return
+		}
+		
+		fmt.Print("Not implemented yet")
+	},
+}
+
+var showTask = &cobra.Command{
+	Use:   "show",
+	Short: "show a specefic detail of a task",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		fmt.Print("Not implemented yet")
+
 	},
 }
