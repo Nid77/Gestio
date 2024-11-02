@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func GetJsonData(filepath string) ([]Task,error) {
+func getJsonData(filepath string) ([]Task,error) {
 	var task []Task
 	jsonData, err := os.ReadFile(filepath)
 	if err != nil {
@@ -22,7 +22,7 @@ func GetJsonData(filepath string) ([]Task,error) {
 	return task, nil
 }
 
-func SaveJsonData(filepath string, task []Task) error {
+func saveJsonData(filepath string, task []Task) error {
 	jsonData, err := json.MarshalIndent(task, "", "    ")
 	if err != nil {
 		fmt.Println("JSON Encoding Error:", err)
@@ -43,21 +43,21 @@ type JSONTaskRepository struct {
 }
 
 func (repo *JSONTaskRepository) AddTask(task Task) error {
-    tasks, err := GetJsonData(repo.FilePath)
+    tasks, err := getJsonData(repo.FilePath)
     if err != nil {
         return err
     }
     tasks = append(tasks, task)
-    return SaveJsonData(repo.FilePath, tasks)
+    return saveJsonData(repo.FilePath, tasks)
 }
 
 
 func (repo *JSONTaskRepository) GetAllTasks() ([]Task, error) {
-    return GetJsonData(repo.FilePath)
+    return getJsonData(repo.FilePath)
 }
 
 func (repo *JSONTaskRepository) GetTask(id int) (Task, error) {
-	tasks, err := GetJsonData(repo.FilePath)
+	tasks, err := getJsonData(repo.FilePath)
 	if err != nil {
 		return Task{}, err
 	}
@@ -70,28 +70,28 @@ func (repo *JSONTaskRepository) GetTask(id int) (Task, error) {
 }
 
 func (repo *JSONTaskRepository) UpdateTask(task Task) error {
-	tasks, err := GetJsonData(repo.FilePath)
+	tasks, err := getJsonData(repo.FilePath)
 	if err != nil {
 		return err
 	}
 	for i, t := range tasks {
 		if t.ID == task.ID {
 			tasks[i] = task
-			return SaveJsonData(repo.FilePath, tasks)
+			return saveJsonData(repo.FilePath, tasks)
 		}
 	}
 	return fmt.Errorf("Task with ID %d not found", task.ID)
 }
 
 func (repo *JSONTaskRepository) DeleteTask(id int) error {
-	tasks, err := GetJsonData(repo.FilePath)
+	tasks, err := getJsonData(repo.FilePath)
 	if err != nil {
 		return err
 	}
 	for i, task := range tasks {
 		if task.ID == id {
 			tasks = append(tasks[:i], tasks[i+1:]...)
-			return SaveJsonData(repo.FilePath, tasks)
+			return saveJsonData(repo.FilePath, tasks)
 		}
 	}
 	return fmt.Errorf("Task with ID %d not found", id)

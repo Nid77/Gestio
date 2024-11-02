@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	. "gestio/cli"
 	Data "gestio/data"
-	//Cli "gestio/cli"
 )
 
 func main() {
@@ -41,11 +41,17 @@ func init() {
 	addTask.Flags().String("duedate", "", "duedate of the task")
 	addTask.Flags().String("tags", "", "tags of the task")
 	addTask.Flags().String("shortdescription", "", "shortdescription")
+
+	rootCmd.AddCommand(listTask)
+	listTask.Flags().Int("limit", 5, "limit the number of tasks to display")
+
 	rootCmd.AddCommand(removeTask)
 	removeTask.Flags().String("fieldname", "", "remove by fieldname")
+
 	rootCmd.AddCommand(editTask)
-	rootCmd.AddCommand(listTask)
+
 	rootCmd.AddCommand(showTask)
+
 	rootCmd.AddCommand(searchTask)
 }
 
@@ -75,7 +81,7 @@ var addTask = &cobra.Command{
 		}
 
 		err := repository.AddTask(task)
-		if(err != nil){
+		if err != nil {
 			return
 		}
 		fmt.Println("Added task:", task.Name)
@@ -88,53 +94,40 @@ var listTask = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tasks []Data.Task
 
-		tasks,err := repository.GetAllTasks()
-		if(err != nil){
+		tasks, err := repository.GetAllTasks()
+		if err != nil {
 			return
 		}
 
-		maxNameWidth := maxLength(tasks, func(t Data.Task) string { return t.Name })
-		maxStatusWidth := maxLength(tasks, func(t Data.Task) string { return t.Status })
-		maxPriorityWidth := maxLength(tasks, func(t Data.Task) string { return t.Priority })
+		limit, err := cmd.Flags().GetInt("limit")
+		if err != nil {
+			limit = 5
+		}
+
+		var nameField string = "Task Name"
+		var statusField string = "Status"
+		var priorityField string = "Priority"
+
+		maxNameWidth := Max(MaxLength(tasks, func(t Data.Task) string { return t.Name }), len(nameField))
+		maxStatusWidth := Max(MaxLength(tasks, func(t Data.Task) string { return t.Status }), len(statusField))
+		maxPriorityWidth := Max(MaxLength(tasks, func(t Data.Task) string { return t.Priority }), len(priorityField))
 
 		// Header
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
-		fmt.Printf("| %s | %s | %s|\n", pad("Nom de la tâche", maxNameWidth), pad("Statut", maxStatusWidth), pad("Priorité", maxPriorityWidth))
+		fmt.Printf("| %s | %s | %s|\n", Pad(nameField, maxNameWidth), Pad(statusField, maxStatusWidth), Pad(priorityField, maxPriorityWidth+1))
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
 
 		// Tasks
-		for _, task := range tasks {
-			fmt.Printf("| %s | %s | %s |\n", pad(task.Name, maxNameWidth), pad(task.Status, maxStatusWidth), pad(task.Priority, maxPriorityWidth))
+		for index, task := range tasks {
+			if index == limit {
+				break
+			}
+			fmt.Printf("| %s | %s | %s |\n", Pad(task.Name, maxNameWidth), Pad(task.Status, maxStatusWidth), Pad(task.Priority, maxPriorityWidth))
 		}
 
 		// Footer
 		fmt.Printf("+%s+%s+%s+\n", strings.Repeat("-", maxNameWidth+2), strings.Repeat("-", maxStatusWidth+2), strings.Repeat("-", maxPriorityWidth+2))
 	},
-}
-
-func pad(str string, length int) string {
-	return fmt.Sprintf("%-*s", length, str)
-}
-
-func maxLength(tasks []Data.Task, selector func(Data.Task) string) int {
-	max := 0
-	for _, task := range tasks {
-		length := len(selector(task))
-		if length > max {
-			max = length
-		}
-	}
-	return max
-}
-
-func MaxString(str []string) int {
-	new := ""
-	for _, s := range str {
-		if len(s) > len(new) {
-			new = s
-		}
-	}
-	return len(new)
 }
 
 var removeTask = &cobra.Command{
@@ -154,14 +147,12 @@ var removeTask = &cobra.Command{
 	},
 }
 
-
-
 var searchTask = &cobra.Command{
 	Use:   "search",
 	Short: "search a task",
 	Run: func(cmd *cobra.Command, args []string) {
 		var tasks []Data.Task
-		tasks,err := repository.GetAllTasks()
+		tasks, err := repository.GetAllTasks()
 		if err != nil {
 			return
 		}
@@ -189,7 +180,6 @@ var searchTask = &cobra.Command{
 	},
 }
 
-
 var editTask = &cobra.Command{
 	Use:   "edit",
 	Short: "modify a task",
@@ -198,7 +188,7 @@ var editTask = &cobra.Command{
 			fmt.Print("You must at least name the task to edit")
 			return
 		}
-		
+
 		fmt.Print("Not implemented yet")
 	},
 }

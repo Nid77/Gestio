@@ -1,11 +1,44 @@
 package cli
 
 import (
-	"reflect"
+	"fmt"
 	Data "gestio/data"
+	"reflect"
 )
 
-func getFields(data []Data.Task, fieldName string) []interface{} {
+func Pad(str string, length int) string {
+	return fmt.Sprintf("%-*s", length, str)
+}
+
+func MaxLength(tasks []Data.Task, selector func(Data.Task) string) int {
+	max := 0
+	for _, task := range tasks {
+		length := len(selector(task))
+		if length > max {
+			max = length
+		}
+	}
+	return max
+}
+
+func MaxString(str []string) int {
+	new := ""
+	for _, s := range str {
+		if len(s) > len(new) {
+			new = s
+		}
+	}
+	return len(new)
+}
+
+func Max(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func GetFields(data []Data.Task, fieldName string) []interface{} {
 	var fieldValues []interface{}
 
 	for _, task := range data {
@@ -17,7 +50,7 @@ func getFields(data []Data.Task, fieldName string) []interface{} {
 	return fieldValues
 }
 
-func convertToStringSlice(values []interface{}) []string {
+func ConvertToStringSlice(values []interface{}) []string {
 	var stringSlice []string
 	for _, value := range values {
 		if strValue, ok := value.(string); ok {
@@ -27,7 +60,7 @@ func convertToStringSlice(values []interface{}) []string {
 	return stringSlice
 }
 
-func getFieldNames(data interface{}) []string {
+func GetFieldNames(data interface{}) []string {
 	var fieldNames []string
 	dataType := reflect.TypeOf(data)
 
